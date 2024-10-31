@@ -27,6 +27,16 @@ const ViewEvent = () => {
   };
   
   const handleAddMember = async () => { // Make this function async
+    // Ensure that the new member is not already added and that the team is not full
+    if (teamMembers.includes(newMember)) {
+      setError('This student is already added to the team.');
+      return;
+    }
+  
+    if (teamMembers.length >= event?.teamSize) {
+      setError(`Team size cannot exceed ${event?.teamSize} members.`);
+      return;
+    }
     // Check if the new member is registered
     const isRegistered = await checkIfStudentRegistered(newMember); // Await the function
   
@@ -62,21 +72,21 @@ const ViewEvent = () => {
       <p>Day: Day {event?.eventDay}</p>
       <p>Category: {event?.eventCategory}</p>
       <p>Time: {`${event?.startTime} - ${event?.endTime}`}</p>
-      <p>Entry Fees: {event?.eventFees}</p>
+      <p>Entry Fees: {event?.entryFees}</p>
       {event?.maxSeats > 0 && <p>Intake: {event?.maxSeats}</p>}
       {event?.teamSize > 1 ? (
         <>
           <p>Team Size: {event?.teamSize}</p>
           <h4>Added Team Members Roll Numbers:</h4>
-          <ul>
+          <p>
             {teamMembers.map((member, index) => (
-              member && <span key={index}>{member}, </span>  // Only display non-empty roll numbers
+              member &&
+              <span key={index} style={{ margin:'5px', border:'2px solid #333', padding:'5px', borderRadius:'10px', display:'inline-block', whiteSpace:'nowrap' }}>{member}</span>
             ))}
-          </ul>
+          </p>
           <h4>Enter Team Member Roll Number</h4>
           {error && <Alert variant="danger">{error}</Alert>}
           <Form.Group>
-            <Form.Label>Member Roll Number</Form.Label>
             <Form.Control
               type="text"
               value={newMember}
@@ -85,7 +95,7 @@ const ViewEvent = () => {
               required
             />
           </Form.Group>
-          <Button variant="secondary" onClick={handleAddMember}>
+          <Button variant="secondary" className="m-3" onClick={handleAddMember}>
             Add Team Member
           </Button>
         </>
