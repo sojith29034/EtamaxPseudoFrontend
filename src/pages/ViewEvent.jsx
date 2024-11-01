@@ -18,12 +18,27 @@ const ViewEvent = () => {
     }
   }, []);
 
-  const handleEnroll = () => {
-    // Here you can send a request to enroll in the event along with the team members' roll numbers
-    console.log(`Enrolling user: ${teamMembers[0]} in event: ${event.eventName} with team members: ${teamMembers}`);
-  
-    // Redirect to event list or confirmation page after enrollment
-    navigate('/');
+  const handleEnroll = async () => {
+    try {
+        // Define the transaction data
+        const transactionData = {
+            eventId: event._id, // Ensure `event._id` is the correct field
+            enrolledId: teamMembers[0], // Assuming the first member is the one who enrolled
+            teamMembers: teamMembers,
+            amount: event.entryFees,
+        };
+
+        // Send a POST request to create the transaction in the backend
+        await axios.post(`${import.meta.env.VITE_BASE_URL}/api/transactions`, transactionData);
+
+        // Display a success message after enrollment
+        setError(''); // Clear any existing errors
+        alert('Enrollment successful!');
+        
+    } catch (error) {
+      console.error('Error enrolling in event:', error);
+      setError('Failed to enroll in the event. Please try again.');
+    }
   };
   
   const handleAddMember = async () => { // Make this function async
