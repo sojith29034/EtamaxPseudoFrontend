@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 
 const ViewEvent = () => {
@@ -9,13 +9,37 @@ const ViewEvent = () => {
   const [teamMembers, setTeamMembers] = useState(['']); // Initial team member input
   const [error, setError] = useState('');
   const [newMember, setNewMember] = useState(''); // State to track new member input
+  const [seatsFilled, setSeatsFilled] = useState(0); // Track filled seats
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user?.rollNumber) {
       setTeamMembers([user.rollNumber]); // Set logged-in roll number by default
     }
-  }, []);
+  
+    // Fetch all transactions and count seats filled for this event
+    const fetchSeatsFilled = async () => {
+      try {
+        // Fetch all transactions
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/transactions`);
+  
+        // Filter transactions to count those with the correct eventId and payment status of 1
+        const seatsCount = response.data.filter(
+          (transaction) => transaction.eventId === event._id && transaction.payment === 1
+        ).length;
+  
+        setSeatsFilled(seatsCount);
+      } catch (error) {
+        console.error('Error fetching seats filled:', error);
+      }
+    };
+  
+    if (event) {
+      fetchSeatsFilled();
+    }
+  }, [event]);
+  
 
   const handleEnroll = async () => {
     try {
@@ -34,7 +58,6 @@ const ViewEvent = () => {
       // Display a success message after enrollment
       setError(''); // Clear any existing errors
       alert('Enrollment successful!');
-
     } catch (error) {
       console.error('Error enrolling in event:', error);
       setError('Failed to enroll in the event. Please try again.');
@@ -79,15 +102,41 @@ const ViewEvent = () => {
     }
   };
 
+  
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/');
+  };
+
+  const isSeatsFull = seatsFilled >= event?.maxSeats;
+
   return (
     <Container className="mt-4">
-      <h2>{event?.eventName}</h2>
+        <Row>
+            <Col>
+                <Button variant="success" onClick={() => navigate('/')}>
+                    Home
+                </Button>
+            </Col>
+            <Col>
+                <h2>{event?.eventName}</h2>
+            </Col>
+            <Col>  
+                <Button variant="danger" onClick={handleLogout}>
+                    Logout
+                </Button>
+            </Col>
+        </Row>
       <p>Description: {event?.eventDetails}</p>
       <p>Day: Day {event?.eventDay}</p>
       <p>Category: {event?.eventCategory}</p>
       <p>Time: {`${event?.startTime} - ${event?.endTime}`}</p>
       <p>Entry Fees: {event?.entryFees}</p>
-      {event?.maxSeats > 0 && <p>Intake: {event?.maxSeats}</p>}
+      {event?.maxSeats > 0 && (
+        <p>
+          Seats: {seatsFilled} / {event?.maxSeats} 
+        </p>
+      )}
       {event?.teamSize > 1 ? (
         <>
           <p>Team Size: {event?.teamSize}</p>
@@ -116,9 +165,13 @@ const ViewEvent = () => {
       ) : (
         <p>Individual Participation</p>
       )}
-      <Button variant="primary" className="m-3" onClick={handleEnroll}>
-        Enroll
-      </Button>
+      {isSeatsFull ? (
+        <Alert variant="danger" className="m-3">Seats Full</Alert>
+      ) : (
+        <Button variant="primary" className="m-3" onClick={handleEnroll}>
+          Enroll
+        </Button>
+      )}
     </Container>
   );
 };
