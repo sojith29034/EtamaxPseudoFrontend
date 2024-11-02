@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 
 const ViewEvent = () => {
   const { state } = useLocation();
   const event = state?.event; // Get event data passed from EventList
-  const navigate = useNavigate();
   const [teamMembers, setTeamMembers] = useState(['']); // Initial team member input
   const [error, setError] = useState('');
   const [newMember, setNewMember] = useState(''); // State to track new member input
@@ -20,41 +19,42 @@ const ViewEvent = () => {
 
   const handleEnroll = async () => {
     try {
-        // Define the transaction data
-        const transactionData = {
-            eventId: event._id, // Ensure `event._id` is the correct field
-            enrolledId: teamMembers[0], // Assuming the first member is the one who enrolled
-            teamMembers: teamMembers,
-            amount: event.entryFees,
-        };
+      // Define the transaction data with a payment field set to 0
+      const transactionData = {
+        eventId: event._id, // Ensure `event._id` is the correct field
+        enrolledId: teamMembers[0], // Assuming the first member is the one who enrolled
+        teamMembers: teamMembers,
+        amount: event.entryFees,
+        payment: 0, // Add payment field set to 0 by default
+      };
 
-        // Send a POST request to create the transaction in the backend
-        await axios.post(`${import.meta.env.VITE_BASE_URL}/api/transactions`, transactionData);
+      // Send a POST request to create the transaction in the backend
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/api/transactions`, transactionData);
 
-        // Display a success message after enrollment
-        setError(''); // Clear any existing errors
-        alert('Enrollment successful!');
-        
+      // Display a success message after enrollment
+      setError(''); // Clear any existing errors
+      alert('Enrollment successful!');
+
     } catch (error) {
       console.error('Error enrolling in event:', error);
       setError('Failed to enroll in the event. Please try again.');
     }
   };
-  
-  const handleAddMember = async () => { // Make this function async
+
+  const handleAddMember = async () => {
     // Ensure that the new member is not already added and that the team is not full
     if (teamMembers.includes(newMember)) {
       setError('This student is already added to the team.');
       return;
     }
-  
+
     if (teamMembers.length >= event?.teamSize) {
       setError(`Team size cannot exceed ${event?.teamSize} members.`);
       return;
     }
     // Check if the new member is registered
     const isRegistered = await checkIfStudentRegistered(newMember); // Await the function
-  
+
     if (isRegistered) {
       setTeamMembers([...teamMembers, newMember]); // Add the new member
       setNewMember(''); // Clear the input field
@@ -63,11 +63,11 @@ const ViewEvent = () => {
       setError('Student not registered yet'); // Show error if student is not registered
     }
   };
-  
+
   const handleMemberChange = (value) => {
     setNewMember(value);
   };
-  
+
   // Function to check if a student is registered
   const checkIfStudentRegistered = async (rollNumber) => {
     try {
@@ -78,8 +78,7 @@ const ViewEvent = () => {
       return false; // Return false if there's an error (e.g., student not found)
     }
   };
-  
-  
+
   return (
     <Container className="mt-4">
       <h2>{event?.eventName}</h2>
@@ -96,7 +95,7 @@ const ViewEvent = () => {
           <p>
             {teamMembers.map((member, index) => (
               member &&
-              <span key={index} style={{ margin:'5px', border:'2px solid #333', padding:'5px', borderRadius:'10px', display:'inline-block', whiteSpace:'nowrap' }}>{member}</span>
+              <span key={index} style={{ margin: '5px', border: '2px solid #333', padding: '5px', borderRadius: '10px', display: 'inline-block', whiteSpace: 'nowrap' }}>{member}</span>
             ))}
           </p>
           <h4>Enter Team Member Roll Number</h4>
