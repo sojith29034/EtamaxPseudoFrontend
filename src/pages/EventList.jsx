@@ -31,6 +31,15 @@ const EventList = () => {
     }
   };
 
+  const handleLogin = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      navigate('/login'); // Redirect to login if not authenticated
+    } else {
+      navigate('/profile');
+    }
+  };
+
   const filteredEvents = events.filter((event) =>
     event.eventName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.eventCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -51,6 +60,9 @@ const EventList = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="shadow-sm"
           />
+        </Col>
+        <Col>
+            <Button variant="success" onClick={() => handleLogin()}>Profile</Button>
         </Col>
       </Row>
 

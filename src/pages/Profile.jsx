@@ -169,13 +169,13 @@ const Profile = () => {
       )}
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={{ backgroundColor:'#333' }}>
           <Modal.Title>Confirm Deletion</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor:'#333' }}>
           Are you sure you want to delete your enrollment for {eventToDelete ? eventDetails[eventToDelete.eventId]?.eventName : ''}?
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor:'#333' }}>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
