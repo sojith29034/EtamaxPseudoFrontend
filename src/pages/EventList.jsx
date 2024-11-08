@@ -87,8 +87,8 @@ const EventList = () => {
               <td>Day {event.eventDay}</td>
               <td style={{ textTransform: 'capitalize' }}>{event.eventCategory}</td>
               <td>{`${event.startTime} - ${event.endTime}`}</td>
-              <td>{event.maxSeats}</td>
-              <td>{event.entryFees}</td>
+              <td>{event.maxSeats === 0 ? 'Unlimited' : `${event.maxSeats}`}</td>
+              <td>{event.maxSeats === 0 ? '0' : `${event.entryFees}`}</td>
               <td>
                 <Button variant="primary" size="sm" onClick={() => handleEnroll(event)} className="shadow-sm">
                   Enroll
