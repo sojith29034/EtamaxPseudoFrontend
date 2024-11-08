@@ -12,6 +12,7 @@ const Profile = () => {
   const [eventToDelete, setEventToDelete] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [allTransactions, setAllTransactions] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,22 +22,24 @@ const Profile = () => {
         navigate('/login');
         return;
       }
-
+  
       try {
+        // Fetch user details
         const userResponse = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/students/rollNo/${storedUser.rollNumber}`);
         setUserName(userResponse.data.name);
-
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/transactions`, {
-          params: { rollNumber: storedUser.rollNumber },
-        });
-        const events = response.data;
-        const userEvents = events.filter(event => event.enrolledId === storedUser.rollNumber);
-
+  
+        // Fetch all transactions
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/transactions`);
+        const allTransactions = response.data;
+  
+        // Filter transactions for this user
+        const userEvents = allTransactions.filter(event => event.enrolledId === storedUser.rollNumber);
         const confirmed = userEvents.filter(event => event.payment === 1);
         const pending = userEvents.filter(event => event.payment === 0);
         setConfirmedEvents(confirmed);
         setPendingEvents(pending);
-
+  
+        // Fetch event details for all user's transactions
         const eventPromises = userEvents.map(event => 
           axios.get(`${import.meta.env.VITE_BASE_URL}/api/events/${event.eventId}`)
         );
@@ -45,8 +48,10 @@ const Profile = () => {
           acc[curr.data._id] = curr.data;
           return acc;
         }, {});
-        
         setEventDetails(details);
+  
+        // Store all transactions globally for calculating filled seats
+        setAllTransactions(allTransactions);
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Could not load data. Please try again.');
@@ -54,9 +59,16 @@ const Profile = () => {
         setLoading(false);
       }
     };
-
+  
     fetchEnrollmentsAndUser();
   }, [navigate]);
+  
+  // Function to calculate filled seats for a particular eventId across all transactions
+  const calculateFilledSeats = (eventId) => {
+    const filledSeats = allTransactions.filter(transaction => transaction.eventId === eventId && transaction.payment === 1);
+    return filledSeats.length;
+  };
+  
 
   const handleDeleteEvent = async () => {
     if (!eventToDelete) return;
@@ -143,6 +155,7 @@ const Profile = () => {
                           <strong>Day:</strong> {eventDetail?.eventDay || 'Loading...'} <br />
                           <strong>Time:</strong> {eventDetail ? `${eventDetail.startTime} - ${eventDetail.endTime}` : 'Loading...'} <br />
                           <strong>Category:</strong> {eventDetail?.eventCategory || 'Loading...'} <br />
+                          <strong>Seats:</strong> {calculateFilledSeats(event.eventId)} / {eventDetail?.maxSeats || 'Free for all'} <br />
                           {eventDetail?.teamSize > 1 ? (
                             <> {event.teamMembers?.join(', ') || 'Loading...'} </>
                           ) : 'Individual Event'}
