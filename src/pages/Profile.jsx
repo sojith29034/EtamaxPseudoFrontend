@@ -14,7 +14,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [allTransactions, setAllTransactions] = useState([]);
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     const fetchEnrollmentsAndUser = async () => {
       const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -24,34 +24,48 @@ const Profile = () => {
       }
   
       try {
-        // Fetch user details
         const userResponse = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/students/rollNo/${storedUser.rollNumber}`);
         setUserName(userResponse.data.name);
-  
-        // Fetch all transactions
+        
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/transactions`);
         const allTransactions = response.data;
   
-        // Filter transactions for this user
         const userEvents = allTransactions.filter(event => event.enrolledId === storedUser.rollNumber);
+  
         const confirmed = userEvents.filter(event => event.payment === 1);
         const pending = userEvents.filter(event => event.payment === 0);
         setConfirmedEvents(confirmed);
         setPendingEvents(pending);
-  
-        // Fetch event details for all user's transactions
-        const eventPromises = userEvents.map(event => 
+
+        const eventPromises = userEvents.map(event =>
           axios.get(`${import.meta.env.VITE_BASE_URL}/api/events/${event.eventId}`)
         );
         const eventResponses = await Promise.all(eventPromises);
+  
         const details = eventResponses.reduce((acc, curr) => {
           acc[curr.data._id] = curr.data;
           return acc;
         }, {});
         setEventDetails(details);
   
-        // Store all transactions globally for calculating filled seats
         setAllTransactions(allTransactions);
+  
+        const allDays = [1, 2, 3];
+        const allCategories = ['Technical', 'Cultural', 'Sports'];
+  
+        const enrolledDays = Array.from(new Set(confirmed.map(event => details[event.eventId]?.eventDay).filter(Boolean)));
+        const enrolledCategories = Array.from(new Set(confirmed.map(event => details[event.eventId]?.eventCategory.charAt(0).toUpperCase() + details[event.eventId]?.eventCategory.slice(1).toLowerCase()).filter(Boolean)));
+  
+        const missingDays = allDays.filter(day => !enrolledDays.includes(day));
+        const missingCategories = allCategories.filter(cat => !enrolledCategories.includes(cat));
+  
+        if (missingDays.length || missingCategories.length) {
+          const missingDaysText = missingDays.length > 0 ? 'Day ' + missingDays.join(', Day ') : 'None';
+          const missingCategoriesText = missingCategories.length > 0 ? missingCategories.join(', ') : 'None';
+          setError(`Missing events on: ${missingDaysText}. <br> Missing categories: ${missingCategoriesText}.`);
+        } else {
+          setError('');
+        }
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Could not load data. Please try again.');
@@ -62,6 +76,8 @@ const Profile = () => {
   
     fetchEnrollmentsAndUser();
   }, [navigate]);
+  
+  
   
   // Function to calculate filled seats for a particular eventId across all transactions
   const calculateFilledSeats = (eventId) => {
@@ -99,7 +115,6 @@ const Profile = () => {
                 </Button>
             </Col>
             <Col> 
-                {error && <Alert variant="danger">{error}</Alert>}
                 {userName && <h4>Welcome, {userName}</h4>}
             </Col>
             <Col>            
@@ -109,6 +124,7 @@ const Profile = () => {
             </Col>
         </Row>
         <hr />
+        {error && <Alert variant="danger"><span dangerouslySetInnerHTML={{ __html: error }} /></Alert>}
       {loading ? (
         <Spinner animation="border" />
       ) : (

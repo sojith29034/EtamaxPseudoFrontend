@@ -133,7 +133,7 @@ const ViewEvent = () => {
       <p>Time: {`${event?.startTime} - ${event?.endTime}`}</p>
       <p>{event.maxSeats === 0 ? '' : `Seats: ${seatsFilled} / ${event?.maxSeats}`}</p>
       {event.maxSeats === 0 ? (
-        <Alert variant="info" className="m-3">This event has unlimited seats and does not require enrollment.</Alert>
+        <Alert variant="info" className="m-3">This event does not require enrollment.</Alert>
       ) : (
         <>
           {event.entryFees > 0 && <p>Entry Fees: {event.entryFees}</p>}
