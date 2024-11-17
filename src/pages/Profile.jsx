@@ -51,7 +51,7 @@ const Profile = () => {
         setAllTransactions(allTransactions);
   
         const allDays = [1, 2, 3];
-        const allCategories = ['Technical', 'Cultural', 'Sports'];
+        const allCategories = ['Technical', 'Cultural', 'Seminar'];
   
         const enrolledDays = Array.from(new Set(confirmed.map(event => details[event.eventId]?.eventDay).filter(Boolean)));
         const enrolledCategories = Array.from(new Set(confirmed.map(event => details[event.eventId]?.eventCategory.charAt(0).toUpperCase() + details[event.eventId]?.eventCategory.slice(1).toLowerCase()).filter(Boolean)));
