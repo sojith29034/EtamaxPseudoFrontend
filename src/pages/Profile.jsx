@@ -176,7 +176,7 @@ const Profile = () => {
                           <strong>Category:</strong> {eventDetail?.eventCategory || 'Loading...'} <br />
                           <strong>Seats:</strong> {calculateFilledSeats(event.eventId)} / {eventDetail?.maxSeats || 'Free for all'} <br />
                           {eventDetail?.teamSize > 1 ? (
-                            <> {event.teamMembers?.join(', ') || 'Loading...'} </>
+                            <> {event.teamName}: {event.teamMembers?.join(', ') || 'Loading...'} </>
                           ) : 'Individual Event'}
                         </Card.Text>
                         <Button 
