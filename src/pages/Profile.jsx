@@ -30,7 +30,10 @@ const Profile = () => {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/transactions`);
         const allTransactions = response.data;
   
-        const userEvents = allTransactions.filter(event => event.enrolledId === storedUser.rollNumber);
+        // Filter transactions by checking if the current user is in the teamMembers array
+        const userEvents = allTransactions.filter(event =>
+          event.teamMembers.some(member => member === storedUser.rollNumber)
+        );
   
         const confirmed = userEvents.filter(event => event.payment === 1);
         const pending = userEvents.filter(event => event.payment === 0);
