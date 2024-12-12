@@ -79,8 +79,17 @@ const Profile = () => {
   
     fetchEnrollmentsAndUser();
   }, [navigate]);
-  
-  
+
+  // Calculate totals
+  const totalConfirmedFees = confirmedEvents.reduce((sum, event) => {
+    const eventDetail = eventDetails[event.eventId];
+    return sum + (eventDetail?.entryFees || 0);
+  }, 0);
+
+  const totalPendingFees = pendingEvents.reduce((sum, event) => {
+    const eventDetail = eventDetails[event.eventId];
+    return sum + (eventDetail?.entryFees || 0);
+  }, 0);
   
   // Function to calculate filled seats for a particular eventId across all transactions
   const calculateFilledSeats = (eventId) => {
@@ -128,6 +137,24 @@ const Profile = () => {
         </Row>
         <hr />
         {error && <Alert variant="danger"><span dangerouslySetInnerHTML={{ __html: error }} /></Alert>}
+        <Card className="my-4 w-50 m-auto">
+          <Row>
+            <Col>Confirmed Events</Col>
+            <Col>{confirmedEvents.length}</Col>
+            <Col>₹{totalConfirmedFees}</Col>
+          </Row>
+          <Row>
+            <Col>Pending Events</Col>
+            <Col>{pendingEvents.length}</Col>
+            <Col>₹{totalPendingFees}</Col>
+          </Row>
+          <Row>
+            <Col>Total Events</Col>
+            <Col>{confirmedEvents.length + pendingEvents.length}</Col>
+            <Col>₹{totalConfirmedFees + totalPendingFees}</Col>
+          </Row>
+        </Card>
+
       {loading ? (
         <Spinner animation="border" />
       ) : (
