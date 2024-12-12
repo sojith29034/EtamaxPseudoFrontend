@@ -125,7 +125,13 @@ const ViewEvent = () => {
           </Button>
         </Col>
       </Row>
-      <p>Description: {event?.eventDetails}</p>
+
+      <iframe
+        style={{ width: '100%', height: 'fit-content', border: 'none'}}
+        srcDoc={`<style>
+          body { color: #ccc; font-family: Arial, sans-serif; line-height: 1.5; }
+          </style>${event?.eventDetails}`}
+      />
       <p>Day: Day {event?.eventDay}</p>
       <p style={{ textTransform: 'capitalize' }}>Category: {event?.eventCategory}</p>
       <p>Time: {`${event?.startTime} - ${event?.endTime}`}</p>
