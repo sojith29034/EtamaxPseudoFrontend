@@ -171,12 +171,20 @@ const Profile = () => {
                         <Card.Title>{eventDetail?.eventName || 'Loading...'}</Card.Title>
                         <Card.Text style={{ textTransform: 'capitalize' }}>
                           <strong>Day:</strong> {eventDetail?.eventDay || 'Loading...'} <br />
+                          <strong>Entry Fees:</strong> ₹{eventDetail?.entryFees || 'Loading...'} <br />
                           <strong>Time:</strong> {eventDetail ? `${eventDetail.startTime} - ${eventDetail.endTime}` : 'Loading...'} <br />
                           <strong>Category:</strong> {eventDetail?.eventCategory || 'Loading...'} <br />
                           {eventDetail?.teamSize > 1 ? (
                             <> {event.teamMembers?.join(', ') || 'Loading...'} </>
                           ) : 'Individual Event'}
                         </Card.Text>
+                        <Button 
+                          variant="success"
+                          href={eventDetail?.whatsapp}
+                          target='_blank'
+                        >
+                          Join WhatsApp Group
+                        </Button>
                       </Card.Body>
                     </Card>
                   </div>
@@ -199,6 +207,7 @@ const Profile = () => {
                         <Card.Title>{eventDetail?.eventName || 'Loading...'}</Card.Title>
                         <Card.Text style={{ textTransform: 'capitalize' }}>
                           <strong>Day:</strong> {eventDetail?.eventDay || 'Loading...'} <br />
+                          <strong>Entry Fees:</strong> ₹{eventDetail?.entryFees || 'Loading...'} <br />
                           <strong>Time:</strong> {eventDetail ? `${eventDetail.startTime} - ${eventDetail.endTime}` : 'Loading...'} <br />
                           <strong>Category:</strong> {eventDetail?.eventCategory || 'Loading...'} <br />
                           <strong>Seats:</strong> {calculateFilledSeats(event.eventId)} / {eventDetail?.maxSeats || 'Free for all'} <br />
