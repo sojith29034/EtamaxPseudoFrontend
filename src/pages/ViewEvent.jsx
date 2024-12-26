@@ -126,6 +126,7 @@ const ViewEvent = () => {
         </Col>
       </Row>
 
+      <img src={`${import.meta.env.VITE_BASE_URL}/${event?.eventBanner}`} style={{ height: '150px', width: '150px', borderRadius: '10px' }} />
       <iframe
         style={{ width: '100%', height: 'fit-content', border: 'none'}}
         srcDoc={`<style>
