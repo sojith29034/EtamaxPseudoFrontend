@@ -39,12 +39,16 @@ const EventList = () => {
       navigate('/profile');
     }
   };
+  const featuredEvents = events.filter((event) =>
+    event.isFeatured
+  );
 
   const filteredEvents = events.filter((event) =>
     event.eventName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.eventCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.startTime.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   return (
     <Container className="mt-4">
@@ -68,6 +72,41 @@ const EventList = () => {
 
       <Table striped bordered hover responsive variant="dark">
         <thead className="text-center">
+          <tr><th colSpan={8}>Featured Events</th></tr>
+          <tr>
+            <th>Sr No</th>
+            <th>Name</th>
+            <th>Day</th>
+            <th>Category</th>
+            <th>Time</th>
+            <th>Limit</th>
+            <th>Entry Fee</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody className="text-center align-middle">
+          {featuredEvents.map((event, index) => (
+            <tr key={event._id}>
+              <td>{index + 1}</td>
+              <td>{event.eventName}</td>
+              <td>Day {event.eventDay}</td>
+              <td style={{ textTransform: 'capitalize' }}>{event.eventCategory}</td>
+              <td>{`${event.startTime} - ${event.endTime}`}</td>
+              <td>{event.maxSeats === 0 ? 'Unlimited' : `${event.maxSeats}`}</td>
+              <td>{event.maxSeats === 0 ? '0' : `${event.entryFees}`}</td>
+              <td>
+                <Button variant="primary" size="sm" onClick={() => handleEnroll(event)} className="shadow-sm">
+                  Enroll
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
+      <Table striped bordered hover responsive variant="dark">
+        <thead className="text-center">
+        <tr><th colSpan={8}>All Events</th></tr>
           <tr>
             <th>Sr No</th>
             <th>Name</th>
