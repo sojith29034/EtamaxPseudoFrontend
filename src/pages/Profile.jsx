@@ -83,12 +83,12 @@ const Profile = () => {
   // Calculate totals
   const totalConfirmedFees = confirmedEvents.reduce((sum, event) => {
     const eventDetail = eventDetails[event.eventId];
-    return sum + (eventDetail?.entryFees || 0);
+    return sum + (eventDetail ? event.amount : 0);
   }, 0);
 
   const totalPendingFees = pendingEvents.reduce((sum, event) => {
     const eventDetail = eventDetails[event.eventId];
-    return sum + (eventDetail?.entryFees || 0);
+    return sum + (eventDetail? event.amount : 0);
   }, 0);
   
   // Function to calculate filled seats for a particular eventId across all transactions
@@ -171,7 +171,7 @@ const Profile = () => {
                         <Card.Title>{eventDetail?.eventName || 'Loading...'}</Card.Title>
                         <Card.Text style={{ textTransform: 'capitalize' }}>
                           <strong>Day:</strong> {eventDetail?.eventDay || 'Loading...'} <br />
-                          <strong>Entry Fees:</strong> {eventDetail ? `₹${eventDetail.entryFees}` : 'Loading...'} <br />
+                          <strong>Entry Fees:</strong> {eventDetail ? `₹${event.amount}` : 'Loading...'} <br />
                           <strong>Time:</strong> {eventDetail ? `${eventDetail.startTime} - ${eventDetail.endTime}` : 'Loading...'} <br />
                           <strong>Category:</strong> {eventDetail?.eventCategory || 'Loading...'} <br />
                           {eventDetail?.teamSize > 1 ? (
