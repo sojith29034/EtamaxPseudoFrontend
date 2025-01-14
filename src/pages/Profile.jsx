@@ -207,7 +207,7 @@ const Profile = () => {
                         <Card.Title>{eventDetail?.eventName || 'Loading...'}</Card.Title>
                         <Card.Text style={{ textTransform: 'capitalize' }}>
                           <strong>Day:</strong> {eventDetail?.eventDay || 'Loading...'} <br />
-                          <strong>Entry Fees:</strong> ₹{eventDetail?.entryFees || 'Loading...'} <br />
+                          <strong>Entry Fees:</strong> ₹{event?.amount || 'Loading...'} <br />
                           <strong>Time:</strong> {eventDetail ? `${eventDetail.startTime} - ${eventDetail.endTime}` : 'Loading...'} <br />
                           <strong>Category:</strong> {eventDetail?.eventCategory || 'Loading...'} <br />
                           <strong>Seats:</strong> {calculateFilledSeats(event.eventId)} / {eventDetail?.maxSeats || 'Free for all'} <br />
