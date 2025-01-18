@@ -112,7 +112,7 @@ const ViewEvent = () => {
       {message && <Alert variant="success">{message}</Alert>}
       <Row>
         <Col>
-          <Button variant="success" onClick={() => navigate('/')}>
+          <Button variant="success" onClick={() => navigate("/")}>
             Home
           </Button>
         </Col>
@@ -126,19 +126,35 @@ const ViewEvent = () => {
         </Col>
       </Row>
 
-      <img src={`${import.meta.env.VITE_BASE_URL}/${event?.eventBanner}`} style={{ height: '150px', width: '150px', borderRadius: '10px' }} />
+      <img
+        src={
+          event.eventBanner.startsWith("data:image")
+            ? event.eventBanner
+            : `${import.meta.env.VITE_BASE_URL}/${event.eventBanner}`
+        }
+        style={{ height: "150px", width: "150px", borderRadius: "10px" }}
+        alt="Event Banner"
+      />
       <iframe
-        style={{ width: '100%', height: 'fit-content', border: 'none'}}
+        style={{ width: "100%", height: "fit-content", border: "none" }}
         srcDoc={`<style>
           body { color: #ccc; font-family: Arial, sans-serif; line-height: 1.5; }
           </style>${event?.eventDetails}`}
       />
       <p>Day: Day {event?.eventDay}</p>
-      <p style={{ textTransform: 'capitalize' }}>Category: {event?.eventCategory}</p>
+      <p style={{ textTransform: "capitalize" }}>
+        Category: {event?.eventCategory}
+      </p>
       <p>Time: {`${event?.startTime} - ${event?.endTime}`}</p>
-      <p>{event.maxSeats === 0 ? '' : `Seats: ${seatsFilled} / ${event?.maxSeats}`}</p>
+      <p>
+        {event.maxSeats === 0
+          ? ""
+          : `Seats: ${seatsFilled} / ${event?.maxSeats}`}
+      </p>
       {event.maxSeats === 0 ? (
-        <Alert variant="info" className="m-3">This event does not require enrollment.</Alert>
+        <Alert variant="info" className="m-3">
+          This event does not require enrollment.
+        </Alert>
       ) : (
         <>
           {event.entryFees > 0 && <p>Entry Fees: {event.entryFees}</p>}
@@ -157,10 +173,24 @@ const ViewEvent = () => {
               </Form.Group>
               <h4>Added Team Members Roll Numbers:</h4>
               <p>
-                {teamMembers.map((member, index) => (
-                  member &&
-                  <span key={index} style={{ margin: '5px', border: '2px solid #333', padding: '5px', borderRadius: '10px', display: 'inline-block', whiteSpace: 'nowrap' }}>{member}</span>
-                ))}
+                {teamMembers.map(
+                  (member, index) =>
+                    member && (
+                      <span
+                        key={index}
+                        style={{
+                          margin: "5px",
+                          border: "2px solid #333",
+                          padding: "5px",
+                          borderRadius: "10px",
+                          display: "inline-block",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {member}
+                      </span>
+                    )
+                )}
               </p>
               <h4>Enter Team Member Roll Number</h4>
               {error && <Alert variant="danger">{error}</Alert>}
@@ -173,7 +203,11 @@ const ViewEvent = () => {
                   required
                 />
               </Form.Group>
-              <Button variant="secondary" className="m-3" onClick={handleAddMember}>
+              <Button
+                variant="secondary"
+                className="m-3"
+                onClick={handleAddMember}
+              >
                 Add Team Member
               </Button>
             </>
@@ -183,7 +217,11 @@ const ViewEvent = () => {
               Enroll
             </Button>
           )}
-          {isSeatsFull && <Alert variant="danger" className="m-3">Seats Full</Alert>}
+          {isSeatsFull && (
+            <Alert variant="danger" className="m-3">
+              Seats Full
+            </Alert>
+          )}
         </>
       )}
     </Container>
